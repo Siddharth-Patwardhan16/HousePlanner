@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "801702045327",
+    "project_id": "houseplanner-3e35b",
+    "storage_bucket": "houseplanner-3e35b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801702045327:android:062f97184197647e6772fa",
+        "android_client_info": {
+          "package_name": "com.houseplanner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3n1lipq_La79lxXVdFdXjGXApNp73Cto"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
