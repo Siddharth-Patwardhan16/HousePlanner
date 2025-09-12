@@ -1,5 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, Button } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Alert,
+  SafeAreaView,
+  StatusBar,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import {
+  Text,
+  TextInput,
+  Button,
+  Card,
+  useTheme,
+  Provider as PaperProvider,
+} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/Ionicons';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
@@ -11,6 +29,8 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const theme = useTheme();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -62,71 +82,143 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        editable={!loading}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={true}
-        editable={!loading}
-      />
-      <Button
-        title={loading ? 'Logging in...' : 'Login'}
-        onPress={handleLogin}
-        disabled={loading}
-      />
-      <View style={styles.SignupContainer}>
-        <Text style={styles.signupText}>Don't have an account?</Text>
-        <Button title="Sign Up" onPress={() => navigation.navigate('SignUp')} />
-      </View>
-    </View>
+    <PaperProvider theme={theme}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <StatusBar barStyle="dark-content" />
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardAvoidingView}
+        >
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.content}>
+            {/* Header */}
+            <Card style={styles.headerCard}>
+              <Card.Content style={styles.header}>
+                <Text variant="headlineMedium" style={styles.title}>Welcome Back!</Text>
+                <Text variant="bodyLarge" style={styles.subtitle}>Sign in to your account</Text>
+              </Card.Content>
+            </Card>
+
+            {/* Form Card */}
+            <Card style={styles.formCard}>
+              <Card.Content>
+                {/* Email Input */}
+                <TextInput
+                  label="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                  mode="outlined"
+                  left={<Icon name="mail-outline" size={20} color="#666" />}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  style={styles.input}
+                />
+
+                {/* Password Input */}
+                <TextInput
+                  label="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  mode="outlined"
+                  left={<Icon name="lock-closed-outline" size={20} color="#666" />}
+                  right={<Icon 
+                    name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
+                    size={20}
+                    color="#666"
+                    onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                  />}
+                  secureTextEntry={!isPasswordVisible}
+                  style={styles.input}
+                />
+
+                {/* Login Button */}
+                <Button
+                  mode="contained"
+                  onPress={handleLogin}
+                  loading={loading}
+                  disabled={loading}
+                  style={styles.button}
+                  contentStyle={styles.buttonContent}
+                >
+                  {loading ? 'Signing In...' : 'Sign In'}
+                </Button>
+
+                {/* Footer Link to Sign Up */}
+                <View style={styles.signupContainer}>
+                  <Text variant="bodyMedium" style={styles.signupText}>Don't have an account?</Text>
+                  <Button
+                    mode="text"
+                    onPress={() => navigation.navigate('SignUp')}
+                    style={styles.signupButton}
+                  >
+                    Sign Up
+                  </Button>
+                </View>
+              </Card.Content>
+            </Card>
+          </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </PaperProvider>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  headerCard: {
+    marginBottom: 20,
+    elevation: 4,
+  },
+  header: {
     alignItems: 'center',
-    padding: 20,
+    paddingVertical: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
     textAlign: 'center',
+    marginBottom: 8,
+  },
+  subtitle: {
+    textAlign: 'center',
+    opacity: 0.7,
+  },
+  formCard: {
+    elevation: 4,
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-    borderRadius: 8,
-    width: '100%',
+    marginBottom: 16,
   },
-  SignupContainer: {
+  button: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  buttonContent: {
+    paddingVertical: 8,
+  },
+  signupContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
+    alignItems: 'center',
+    marginTop: 16,
   },
   signupText: {
-    marginRight: 4,
+    marginRight: 8,
   },
-  signupLink: {
-    color: 'blue',
+  signupButton: {
+    marginLeft: -8,
   },
 });
 
